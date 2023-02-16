@@ -1,0 +1,19 @@
+{
+	"name": "ArmorTooltip",
+	"namespace": "ludma",
+	"version_number": "1.0.0",
+	"description": "Shows the percentage damage reduction gained/lost from armor modifiers on items and upgrades.",
+	"website_url": "",
+	"dependencies": [
+	],
+	"extra": {
+		"godot": {
+			"incompatibilities": [
+			],
+			"authors": ["ludma"],
+			"compatible_mod_loader_version": "3.0.0",
+			"compatible_game_version": ["0.8.9.3"],
+			"config_defaults": {}
+		}
+	}
+}
