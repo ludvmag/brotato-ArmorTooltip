@@ -15,7 +15,7 @@ func _init(modLoader = ModLoader):
 
 	# Add extensions
 	modLoader.install_script_extension(ext_dir + "ui/menus/shop/item_description.gd")
-	modLoader.install_script_extension(ext_dir + "singletons/run_data.gd")
+	# modLoader.install_script_extension(ext_dir + "singletons/run_data.gd")
 		
 func _ready():
 	ModLoaderUtils.log_info("Done", MYMODNAME_LOG)
