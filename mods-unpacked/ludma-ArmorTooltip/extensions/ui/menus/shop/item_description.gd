@@ -6,34 +6,38 @@ extends "res://ui/menus/shop/item_description.gd"
 func set_item(item_data:ItemParentData)->void :
 	.set_item(item_data)
 	
-	var armorGain = 0
-	var hasArmor = false
+	var armorEffects = []
 	for effect in item_data.effects:
 		if effect.key == "stat_armor":
-			hasArmor = true
-			armorGain = effect.value
+			armorEffects.append(effect)
 	
-	if !hasArmor:
+	if armorEffects.empty() or not item_data is ItemData:
 		return
 	
-	var additionalText = get_additional_armor_text(armorGain)
-	replaceArmorText(item_data.get_effects_text(), additionalText)
-	
+	if item_data is CharacterData or item_data is UpgradeData:
+		# Upgrade and Character Data.
+		replaceArmorText(item_data.get_effects_text(), "] " + tr("STAT_ARMOR"), armorEffects)
+	else:
+		# ItemData (But not character or upgrade)
+		replaceArmorText(item_data.get_effects_text(), tr("STAT_ARMOR"), armorEffects)
+
 # Custom
 # =============================================================================
 
-func replaceArmorText(itemText: String, additionalText: String)->void:
-	var armorTr = "] " + tr("STAT_ARMOR")
-	var armorTrLength = armorTr.length()
-	
-	var armorIndex = itemText.find_last(armorTr)
-	if armorIndex < 0:
-		return
-	
-	var posToInsert = armorIndex + armorTrLength
-	var newText = itemText.insert(posToInsert, additionalText)
-
-	get_effects().bbcode_text = newText
+func replaceArmorText(itemText: String, stringToReplace: String, armorEffects: Array)->void:
+	var findFrom = 0
+	for effect in armorEffects:
+		var additionalText = get_additional_armor_text(effect.value)	
+		
+		var armorIndex = itemText.find(stringToReplace, findFrom)
+		if armorIndex < 0:
+			continue
+		
+		var posToInsert = armorIndex + stringToReplace.length()
+		itemText = itemText.insert(posToInsert, additionalText)
+		findFrom = posToInsert + additionalText.length()
+		
+	get_effects().bbcode_text = itemText
 
 func get_additional_armor_text(addedArmor: int)->String:
 	var currentArmor = Utils.get_stat("stat_armor")
