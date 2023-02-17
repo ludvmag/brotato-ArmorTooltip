@@ -7,27 +7,37 @@ func set_item(item_data:ItemParentData)->void :
 	.set_item(item_data)
 	
 	var armorEffects = []
+	var hpRegenEffects = []
 	for effect in item_data.effects:
 		if effect.key == "stat_armor":
 			armorEffects.append(effect)
+		if effect.key == "stat_hp_regeneration":
+			hpRegenEffects.append(effect)
 	
-	if armorEffects.empty() or not item_data is ItemData:
+	if not item_data is ItemData:
 		return
-	
-	if item_data is CharacterData or item_data is UpgradeData:
-		# Upgrade and Character Data.
-		replaceArmorText(item_data.get_effects_text(), "] " + tr("STAT_ARMOR"), armorEffects)
-	else:
-		# ItemData (But not character or upgrade)
-		replaceArmorText(item_data.get_effects_text(), tr("STAT_ARMOR"), armorEffects)
+		
+	if not armorEffects.empty():
+		var armorTextFunc = funcref(self, "get_additional_armor_text")
+		if item_data is CharacterData or item_data is UpgradeData:
+			# Upgrade and Character Data.
+			replaceText(item_data.get_effects_text(), "] " + tr("STAT_ARMOR"), armorEffects, armorTextFunc)
+		else:
+			# ItemData (But not character or upgrade)
+			replaceText(item_data.get_effects_text(), tr("STAT_ARMOR"), armorEffects, armorTextFunc)
+			
+	if not hpRegenEffects.empty():
+		var hpregTextFunc = funcref(self, "get_additional_hpreg_text")
+		replaceText(item_data.get_effects_text(), tr("STAT_HP_REGENERATION"), hpRegenEffects, hpregTextFunc)
+
 
 # Custom
 # =============================================================================
 
-func replaceArmorText(itemText: String, stringToReplace: String, armorEffects: Array)->void:
+func replaceText(itemText: String, stringToReplace: String, armorEffects: Array, textFunc)->void:
 	var findFrom = 0
 	for effect in armorEffects:
-		var additionalText = get_additional_armor_text(effect.value)	
+		var additionalText = textFunc.call_func(effect.value)
 		
 		var armorIndex = itemText.find(stringToReplace, findFrom)
 		if armorIndex < 0:
@@ -38,6 +48,24 @@ func replaceArmorText(itemText: String, stringToReplace: String, armorEffects: A
 		findFrom = posToInsert + additionalText.length()
 		
 	get_effects().bbcode_text = itemText
+
+func get_additional_hpreg_text(addedRegen: int)->String:
+	var currentReg = Utils.get_stat("stat_hp_regeneration")
+	var currentHps = getHealthPerSecond(currentReg)
+	var hpsAfterAdded = getHealthPerSecond(currentReg + addedRegen)
+	
+	return " ({0}/s -> {1}/s)".format([currentHps, hpsAfterAdded])
+
+func getHealthPerSecond(hpreg: float)->float:
+	var val = RunData.get_hp_regeneration_timer(hpreg)
+	if val == 99:
+		return 0.0
+		
+	var amount = 2 if RunData.effects["double_hp_regen"] else 1
+	var amount_per_sec = amount / val
+	var hps = stepify(amount_per_sec, 0.01)
+		
+	return hps
 
 func get_additional_armor_text(addedArmor: int)->String:
 	var currentArmor = Utils.get_stat("stat_armor")
