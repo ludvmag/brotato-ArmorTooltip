@@ -1,9 +1,9 @@
 {
 	"name": "ArmorTooltip",
 	"namespace": "ludma",
-	"version_number": "1.0.0",
+	"version_number": "1.0.1",
 	"description": "Shows the percentage damage reduction gained/lost from armor modifiers on items and upgrades.",
-	"website_url": "",
+	"website_url": "https://github.com/ludvmag/brotato-ArmorTooltip",
 	"dependencies": [
 	],
 	"extra": {

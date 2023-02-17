@@ -23,10 +23,10 @@ func set_item(item_data:ItemParentData)->void :
 # =============================================================================
 
 func replaceArmorText(itemText: String, additionalText: String)->void:
-	var armorTr = tr("STAT_ARMOR")
+	var armorTr = "] " + tr("STAT_ARMOR")
 	var armorTrLength = armorTr.length()
 	
-	var armorIndex = itemText.find(armorTr)
+	var armorIndex = itemText.find_last(armorTr)
 	if armorIndex < 0:
 		return
 	
