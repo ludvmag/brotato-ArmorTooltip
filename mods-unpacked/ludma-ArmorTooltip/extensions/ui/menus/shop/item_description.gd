@@ -1,60 +1,77 @@
 extends "res://ui/menus/shop/item_description.gd"
-
+###
+# Currently modifying text the basic case of stat modifiers on Items,Characters and Upgrades. Examples:
+# +3[/color] Armor
+# -2[/color] HP Regeneration
+# -100[/color] Armor
+# Not covering:
+# "+x armor while standing still/ while moving" - effect_stat_while_not_moving
+# "+X for every Y you have" - EFFECT_GAIN_STAT_FOR_EVERY_PERM_STAT
+# Regeneration potion's "HP regen doubled when below 50% hp"
+#
+###
 # Extensions
 # =============================================================================
 
 func set_item(item_data:ItemParentData)->void :
 	.set_item(item_data)
 	
-	var armorEffects = []
-	var hpRegenEffects = []
+	var effects = []
 	for effect in item_data.effects:
 		if effect.key == "stat_armor":
-			armorEffects.append(effect)
+			effects.append(effect)
 		if effect.key == "stat_hp_regeneration":
-			hpRegenEffects.append(effect)
+			effects.append(effect)
 	
 	if not item_data is ItemData:
 		return
-		
-	if not armorEffects.empty():
-		var armorTextFunc = funcref(self, "get_additional_armor_text")
-		if item_data is CharacterData or item_data is UpgradeData:
-			# Upgrade and Character Data.
-			replaceText(item_data.get_effects_text(), "] " + tr("STAT_ARMOR"), armorEffects, armorTextFunc)
-		else:
-			# ItemData (But not character or upgrade)
-			replaceText(item_data.get_effects_text(), tr("STAT_ARMOR"), armorEffects, armorTextFunc)
-			
-	if not hpRegenEffects.empty():
-		var hpregTextFunc = funcref(self, "get_additional_hpreg_text")
-		replaceText(item_data.get_effects_text(), tr("STAT_HP_REGENERATION"), hpRegenEffects, hpregTextFunc)
+	
+	var itemText = item_data.get_effects_text()
+	if not effects.empty():
+		itemText = replaceText(itemText, effects)
 
+	get_effects().bbcode_text = itemText
 
 # Custom
 # =============================================================================
 
-func replaceText(itemText: String, stringToReplace: String, armorEffects: Array, textFunc)->void:
+func replaceText(itemText: String, effects: Array)->String:
+	var regex = RegEx.new()
 	var findFrom = 0
-	for effect in armorEffects:
+	for effect in effects:
+		var effectTextKey = effect.key.to_upper()
+		var textFunc = get_additional_text_func_for_effect(effectTextKey)
 		var additionalText = textFunc.call_func(effect.value)
 		
-		var armorIndex = itemText.find(stringToReplace, findFrom)
-		if armorIndex < 0:
+		regex.compile("(\\-|\\+)\\d+(\\[\\/color\\])+ " + tr(effectTextKey)) # regex for 'basic case'.
+		var regexMatch = regex.search(itemText, findFrom)
+		if not regexMatch:
 			continue
 		
-		var posToInsert = armorIndex + stringToReplace.length()
+		var posToInsert = regexMatch.get_end()
 		itemText = itemText.insert(posToInsert, additionalText)
 		findFrom = posToInsert + additionalText.length()
 		
-	get_effects().bbcode_text = itemText
+	return itemText
+
+func get_additional_text_func_for_effect(effect_key: String)->FuncRef:
+	if effect_key == "STAT_ARMOR":
+		return funcref(self, "get_additional_armor_text")
+	elif effect_key == "STAT_HP_REGENERATION":
+		return funcref(self, "get_additional_hpreg_text")
+	else:
+		return null
 
 func get_additional_hpreg_text(addedRegen: int)->String:
 	var currentReg = Utils.get_stat("stat_hp_regeneration")
 	var currentHps = getHealthPerSecond(currentReg)
 	var hpsAfterAdded = getHealthPerSecond(currentReg + addedRegen)
 	
-	return " ({0}/s -> {1}/s)".format([currentHps, hpsAfterAdded])
+	var currentHpsString = add_color(currentHps, "/s")
+	var hpsAfterAddedString = add_color(hpsAfterAdded, "/s")
+	var arrow = get_colored_arrow(currentHps, hpsAfterAdded)
+	
+	return " ({0} {1} {2})".format([currentHpsString, arrow, hpsAfterAddedString])
 
 func getHealthPerSecond(hpreg: float)->float:
 	var val = RunData.get_hp_regeneration_timer(hpreg)
@@ -69,21 +86,28 @@ func getHealthPerSecond(hpreg: float)->float:
 
 func get_additional_armor_text(addedArmor: int)->String:
 	var currentArmor = Utils.get_stat("stat_armor")
+	var armorAfterAddedArmor = currentArmor + addedArmor
 	var currentArmorReduction = round((1.0 - RunData.get_armor_coef(currentArmor)) * 100.0)
-	var reductionAfterAddedArmor = round((1.0 - RunData.get_armor_coef(currentArmor + addedArmor)) * 100.0)
+	var reductionAfterAddedArmor = round((1.0 - RunData.get_armor_coef(armorAfterAddedArmor)) * 100.0)
 	
-	if currentArmorReduction < 0:
-		currentArmorReduction = "[color=" + Utils.NEG_COLOR_STR + "]" + str(currentArmorReduction) + "%[/color]"
-	elif currentArmorReduction > 0:
-		currentArmorReduction = "[color=" + Utils.POS_COLOR_STR + "]" + str(currentArmorReduction) + "%[/color]"
-	else:
-		currentArmorReduction = str(currentArmorReduction) + "%"
+	currentArmorReduction = add_color(currentArmorReduction, "%")
+	reductionAfterAddedArmor = add_color(reductionAfterAddedArmor, "%")
+	var arrow = get_colored_arrow(currentArmor, armorAfterAddedArmor)
 	
-	if reductionAfterAddedArmor < 0:
-		reductionAfterAddedArmor = "[color=" + Utils.NEG_COLOR_STR + "]" + str(reductionAfterAddedArmor) + "%[/color]"
-	elif reductionAfterAddedArmor > 0:
-		reductionAfterAddedArmor = "[color=" + Utils.POS_COLOR_STR + "]" + str(reductionAfterAddedArmor) + "%[/color]"
+	return " ({0} {1} {2})".format([currentArmorReduction, arrow, reductionAfterAddedArmor])
+
+func add_color(value, postfix: String = "")->String:
+	if value < 0:
+		return "[color=" + Utils.NEG_COLOR_STR + "]" + str(value) + postfix + "[/color]"
+	elif value > 0:
+		return "[color=" + Utils.POS_COLOR_STR + "]" + str(value) + postfix + "[/color]"
 	else:
-		reductionAfterAddedArmor = str(reductionAfterAddedArmor) + "%"
-		
-	return " ({0} -> {1})".format([currentArmorReduction, reductionAfterAddedArmor])
+		return str(value) + postfix
+
+func get_colored_arrow(initialValue, afterAdditionValue):
+	if initialValue > afterAdditionValue:
+		return "[color=" + Utils.NEG_COLOR_STR + "]" + "->" + "[/color]"
+	elif initialValue < afterAdditionValue:
+		return "[color=" + Utils.POS_COLOR_STR + "]" + "->" + "[/color]"
+	else:
+		return "->"

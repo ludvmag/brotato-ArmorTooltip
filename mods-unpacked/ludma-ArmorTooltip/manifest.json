@@ -1,8 +1,8 @@
 {
 	"name": "ArmorTooltip",
 	"namespace": "ludma",
-	"version_number": "1.0.3",
-	"description": "Shows the percentage damage reduction gained/lost from armor modifiers on items and upgrades. Now also includes similar improvements for hp regeneration.",
+	"version_number": "1.0.4",
+	"description": "Shows the percentage damage reduction gained/lost from armor modifiers on most items and upgrades. Now also includes similar improvements for hp regeneration.",
 	"website_url": "https://github.com/ludvmag/brotato-ArmorTooltip",
 	"dependencies": [
 	],
