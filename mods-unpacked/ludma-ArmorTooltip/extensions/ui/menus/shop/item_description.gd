@@ -26,16 +26,17 @@ func set_item(item_data:ItemParentData)->void :
 	if not item_data is ItemData:
 		return
 	
-	var itemText = item_data.get_effects_text()
+	#var itemText = item_data.get_effects_text()
+	var itemText = get_effects().bbcode_text
 	if not effects.empty():
-		itemText = replaceText(itemText, effects)
+		itemText = insertText(itemText, effects)
 
 	get_effects().bbcode_text = itemText
 
 # Custom
 # =============================================================================
 
-func replaceText(itemText: String, effects: Array)->String:
+func insertText(itemText: String, effects: Array)->String:
 	var regex = RegEx.new()
 	var findFrom = 0
 	for effect in effects:
