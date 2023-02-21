@@ -5,3 +5,8 @@ root/*
 # Except mod
 !root/mods-unpacked
 !root/mods-unpacked/**
+
+#Except .import files belonging to this mod
+!root/.import
+root/.import/*
+!root/.import/ehp_*
