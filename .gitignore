@@ -1,0 +1,7 @@
+# Ignore everything in root
+
+root/*
+
+# Except mod
+!root/mods-unpacked
+!root/mods-unpacked/**
