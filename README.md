@@ -1,6 +1,9 @@
 # Improved Armor Tooltip
 
-Improved armor tooltip for Brotato. Modifies the text for armor on upgrades, items and character selection. Shows the percentage damage reduction/increase that the armor modifiter would result in. Since armor has diminishing returns and gets less valueable for each point of armor you already have this can help the player decide wether to pick or disregard armor upgrades and items.
+Improved Armor Tooltip has expanded beyond simply improving the armor tooltips and now includes the following features:
+- Armor Tooltip: Modifies the text for armor on upgrades, items and characters, showing the percentage damage reduction that the armor modifier would result in on your character.
+- Health Regeneration Tooltip: Similarly as for armor, displays the health per second granted by an upgrade, item or character with a health regeneration modifier.
+- Effective Health: Adds a new stat "EHP" to the primary stats in the shop menu. EHP is calculated using your current max HP and armor. EHP describes the raw amount of damage your character can take before dying. Note that EHP does not factor in Dodge and health regeneration.
 
 
 ## Requirements
