@@ -13,10 +13,11 @@ Improved Armor Tooltip has expanded beyond simply improving the armor tooltips a
 Subscribe on steam workshop here: https://steamcommunity.com/sharedfiles/filedetails/?id=2934277576
 
 ## Screenshots
-![upgrade_png](https://user-images.githubusercontent.com/125604844/219479594-afc81c12-6186-402b-9905-b4cbf2bc4e3c.PNG)
-![character_png](https://user-images.githubusercontent.com/125604844/219479587-59df93ef-01f0-4425-be34-554e48fc9cca.PNG)
-![upgrade2](https://user-images.githubusercontent.com/125604844/219479596-032a2b21-7d18-40cf-83dd-43dc7f4948ba.jpg)
-![shop_png](https://user-images.githubusercontent.com/125604844/219479758-fa51c103-584a-47bd-9d28-91aa1ee45b4d.PNG)
+
+![exoskeleton](https://user-images.githubusercontent.com/125604844/220418305-94bc7fe4-121a-431b-9d0a-b42e1449fc55.PNG)
+![Bull](https://user-images.githubusercontent.com/125604844/220418510-e473abff-25b7-4393-951b-4578f9f3b822.PNG)
+![reg upgrade](https://user-images.githubusercontent.com/125604844/220418369-8c226c9c-cf92-43f1-97c6-a454540a300d.PNG)
+![armor upgrade](https://user-images.githubusercontent.com/125604844/220418372-487d66dd-afc7-4535-802f-870befa0aeab.PNG)
 
 ## Links
 
