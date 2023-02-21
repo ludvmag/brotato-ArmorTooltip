@@ -18,16 +18,18 @@ func _init(modLoader = ModLoader):
 	modLoader.add_translation_from_resource(trans_dir + "ludma_ehpmod_Translation.en.translation")
 	# Add extensions
 	modLoader.install_script_extension(ext_dir + "ui/menus/shop/item_description.gd")
+	modLoader.install_script_extension(ext_dir + "ui/menus/shop/stat_popup.gd")
 	modLoader.install_script_extension(ext_dir + "singletons/utils.gd")
 	modLoader.install_script_extension(ext_dir + "singletons/item_service.gd")
 
 func _ready():
-	ModLoaderUtils.log_info("Done", MYMODNAME_LOG)
 	add_EHP_Stats()
+	ModLoaderUtils.log_info("Done", MYMODNAME_LOG)
 
 func add_EHP_Stats()->void:
 	var ehp_container_scene_path = "res://mods-unpacked/ludma-ArmorTooltip/Scenes/EHPContainer.tscn"
 	var ehp_container = load(ehp_container_scene_path).instance()
+
 	var stats_container_scene_path = "res://ui/menus/shop/stats_container.tscn"
 	var stats_container_scene = load(stats_container_scene_path).instance()
 	
@@ -35,7 +37,5 @@ func add_EHP_Stats()->void:
 
 	primary_stats_container.add_child(ehp_container, true)
 	ehp_container.set_owner(stats_container_scene)
-	
-	#ModLoader.append_node_in_scene(stats_container_scene, "EHPContainer", primary_stats_container, "", true)
-	
+
 	ModLoader.save_scene(stats_container_scene, stats_container_scene_path)

@@ -1,2 +1,3 @@
 keys,en
 EHPMOD_STAT_EHP,Effective HP
+INFO_POS_EHPMOD_STAT_EHP,Effective healthpoints describes the amount of unmitigated damage it takes to kill you. It is calculated using only Armor and Max HP.
